@@ -1,0 +1,217 @@
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="modalTambah"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Garansi</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <form method="post" id="formTambah">
+        <div class="modal-body">
+          <div class="form-group mb-1">
+            <input
+              type="date"
+              value=""
+              id="tanggal"
+              class="form-control"
+              placeholder="Tanggal"
+            />
+          </div>
+          <div class="form-group mb-1">
+            <label for="">Optik/Armada</label>
+            <select name="optik_id" id="optik_id" class="form-control" required>
+              <option value="">--- Optik/Armada ---</option>
+              <% dataOptik.forEach(function(data) { %>
+              <option value="<%=data.id%>"><%=data.nama_optik%></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group mb-1">
+            <label for="">Nama</label>
+            <input
+              type="text"
+              name="nama"
+              id="nama"
+              class="form-control"
+              placeholder="Nama"
+              required
+            />
+          </div>
+          <div class="form-group mb-1">
+            <label for="">Frame</label>
+            <input
+              type="text"
+              name="frame"
+              id="frame"
+              class="form-control"
+              placeholder="Frame"
+              required
+            />
+          </div>
+          <div class="form-group mb-3">
+            <label for="">Lensa</label>
+            <input
+              type="text"
+              name="lensa"
+              id="lensa"
+              class="form-control"
+              placeholder="Lensa"
+              required
+            />
+          </div>
+          <div class="form-inline row">
+            <label for="" class="col-1"><b>R</b></label>
+            <div class="form-group col p-0">
+              <input
+                type="text"
+                class="form-control"
+                name="rsph"
+                id="rsph"
+                placeholder="Sph"
+              />
+            </div>
+            <div class="form-group col p-0">
+              <input
+                type="text"
+                class="form-control"
+                name="rcyl"
+                id="rcyl"
+                placeholder="Cyl"
+              />
+            </div>
+            <div class="form-group col p-0">
+              <input
+                type="text"
+                class="form-control"
+                name="raxis"
+                id="raxis"
+                placeholder="Axis"
+              />
+            </div>
+            <div class="form-group col p-0">
+              <input
+                type="text"
+                class="form-control"
+                name="radd"
+                id="radd"
+                placeholder="Add"
+              />
+            </div>
+            <div class="form-group col p-0">
+              <input
+                type="text"
+                class="form-control"
+                name="rmpd"
+                id="rmpd"
+                placeholder="Mpd"
+              />
+            </div>
+          </div>
+          <div class="form-inline row mb-1">
+            <label for="" class="col-1"><b>L</b></label>
+            <div class="form-group col p-0">
+              <input
+                type="text"
+                class="form-control"
+                name="lsph"
+                id="lsph"
+                placeholder="Sph"
+              />
+            </div>
+            <div class="form-group col p-0">
+              <input
+                type="text"
+                class="form-control"
+                name="lcyl"
+                id="lcyl"
+                placeholder="Cyl"
+              />
+            </div>
+            <div class="form-group col p-0">
+              <input
+                type="text"
+                class="form-control"
+                name="laxis"
+                id="laxis"
+                placeholder="Axis"
+              />
+            </div>
+            <div class="form-group col p-0">
+              <input
+                type="text"
+                class="form-control"
+                name="ladd"
+                id="ladd"
+                placeholder="Add"
+              />
+            </div>
+            <div class="form-group col p-0">
+              <input
+                type="text"
+                class="form-control"
+                name="lmpd"
+                id="lmpd"
+                placeholder="Mpd"
+              />
+            </div>
+          </div>
+
+          <div class="form-group mb-1">
+            <label for="">Garansi Lensa</label>
+            <select
+              class="form-control"
+              name="garansi_lensa"
+              id="garansi_lensa"
+              required
+            >
+              <option value="-">-- Tanpa Garansi --</option>
+              <option value="6">6 Bulan</option>
+              <option value="1">1 Tahun</option>
+              <option value="2">2 Tahun</option>
+              <option value="3">3 Tahun</option>
+            </select>
+          </div>
+
+          <div class="form-group mb-1">
+            <label for="">Garansi Frame</label>
+            <select
+              class="form-control"
+              name="garansi_frame"
+              id="garansi_frame"
+              required
+            >
+              <option value="-">-- Tanpa Garansi --</option>
+              <option value="6">6 Bulan</option>
+              <option value="1">1 Tahun</option>
+              <option value="2">2 Tahun</option>
+              <option value="3">3 Tahun</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Simpan
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

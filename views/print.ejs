@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Print Kartu Garansi</title>
+    <script src="../javascripts/moment.min.js"></script>
+    <script src="../javascripts/moment-timezone-with-data.js"></script>
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+      }
+      #data {
+        background: white;
+        width: 8.3cm;
+        height: 3.4cm;
+        margin: 0 auto;
+        border-radius: 0.15cm;
+        font-family: Arial;
+        font-size: 10px;
+        padding-top: 6px;
+      }
+      #data table {
+        border-collapse: collapse;
+        margin: 3px auto;
+        text-align: left;
+      }
+      #data #table2 {
+        text-align: center;
+        margin-top: 3px;
+      }
+      #info {
+        font-family: square721 bt;
+        font-size: 8px;
+        padding: 0.2cm;
+      }
+      td {
+        text-transform: uppercase;
+      }
+      #barcode {
+        width: 100%;
+        height: 25px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="dasar">
+      <div id="data">
+        <table width="95%" id="table1">
+          <tr>
+            <th width="25%">Name</th>
+            <td>: <%=data.nama%></td>
+          </tr>
+          <tr>
+            <th width="25%">Type of Lens</th>
+            <td>: <%=data.lensa%></td>
+          </tr>
+          <tr>
+            <th width="25%">Type of Frame</th>
+            <td>: <%=data.frame%></td>
+          </tr>
+        </table>
+        <table width="90%" border="1" id="table2">
+          <tr>
+            <td></td>
+            <td>Sph</td>
+            <td>Cyl</td>
+            <td>Axis</td>
+            <td>Add</td>
+            <td>Mpd</td>
+            <td>Prism</td>
+          </tr>
+          <% let r = data.r.split("/") %>
+          <tr>
+            <td>OD</td>
+            <td><%= r[0] %></td>
+            <td><%= r[1] %></td>
+            <td><%= r[2] %></td>
+            <td><%= r[3] %></td>
+            <td><%= r[4] %></td>
+            <td><%= r[5] %></td>
+          </tr>
+          <% let l = data.l.split("/") %>
+          <tr>
+            <td>OS</td>
+            <td><%= l[0] %></td>
+            <td><%= l[1] %></td>
+            <td><%= l[2] %></td>
+            <td><%= l[3] %></td>
+            <td><%= l[4] %></td>
+            <td><%= l[5] %></td>
+          </tr>
+        </table>
+        <table width="95%" id="table3">
+          <tr>
+            <th width="30%">Date of Issue</th>
+            <td>: <%=moment.utc(data.tanggal).format('DD/MM/YYYY')%></td>
+          </tr>
+          <tr>
+            <th width="30%">Frame</th>
+            <td>
+              : <%=data.garansi_frame%> <%=data.garansi_frame === "6" ? " Bulan"
+              : data.garansi_frame === "-" ? "" : " Tahun"%>
+            </td>
+            <td rowspan="2" width="40%"><svg id="barcode"></svg></td>
+            <td></td>
+          </tr>
+          <tr>
+            <th width="30%">Lensa</th>
+            <td>
+              : <%=data.garansi_lensa%> <%=data.garansi_lensa === "6" ? " Bulan"
+              : data.garansi_lensa === "-" ? "" : " Tahun"%>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      window.print();
+    </script>
+    <script src="../javascripts/JsBarcode.all.min.js"></script>
+    <script>
+      let code =
+        "<%- moment.tz(data.tanggal, 'Asia/Jakarta').format('MMDDYYhmmss') %>";
+      let id = "<%- data.id %>";
+      JsBarcode("#barcode", code, {
+        height: 40,
+      });
+    </script>
+  </body>
+</html>
