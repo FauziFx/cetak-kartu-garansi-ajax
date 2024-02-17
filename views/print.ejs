@@ -127,6 +127,11 @@
       JsBarcode("#barcode", code, {
         height: 40,
       });
+      document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(function() {
+                window.close();
+            }, 3000);
+        });
     </script>
   </body>
 </html>

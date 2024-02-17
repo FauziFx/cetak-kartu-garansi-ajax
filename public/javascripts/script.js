@@ -67,7 +67,7 @@ $(document).on("click", ".btn-print", function () {
   window.open(
     "print/" + id,
     "",
-    "postwindow directories=0,titlebar=0,toolbar=0,location=0,status=0,menubar=0,scrollbars=no,resizable=no, width=1280,height=720"
+    "postwindow directories=0,titlebar=0,toolbar=0,location=0,status=0,menubar=0,scrollbars=no,resizable=no, width=960,height=480"
   );
 });
 
