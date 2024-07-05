@@ -1,3 +1,4 @@
+const API = config.URL_API;
 load_data(1, 10);
 
 var today = new Date();
@@ -17,7 +18,7 @@ const bsModalEdit = new bootstrap.Modal("#modalEdit");
 
 const Toast = Swal.mixin({
   toast: true,
-  position: "top-end",
+  position: "top",
   showConfirmButton: false,
   timer: 2000,
   timerProgressBar: true,
@@ -115,7 +116,7 @@ $("#formEdit").on("submit", function (e) {
   const claimedFrame = garansi_frame === "-" ? "0" : "1";
 
   $.ajax({
-    url: "http://localhost:5000/api/garansi/" + id,
+    url: API + "garansi/" + id,
     type: "put",
     data: JSON.stringify({
       nama: nama,
@@ -158,7 +159,7 @@ $(document).on("click", ".btn-edit", function () {
   $.LoadingOverlay("show");
 
   $.ajax({
-    url: "http://localhost:5000/api/garansi/" + id,
+    url: API + "garansi/" + id,
     type: "get",
     dataType: "json",
     contentType: "application/json",
@@ -201,7 +202,7 @@ $(document).on("click", ".btn-preview", function () {
   $.LoadingOverlay("show");
 
   $.ajax({
-    url: "http://localhost:5000/api/garansi/" + id,
+    url: API + "garansi/" + id,
     type: "get",
     dataType: "json",
     contentType: "application/json",
@@ -319,7 +320,7 @@ $(document).on("click", ".btn-hapus", function () {
     if (result.isConfirmed) {
       $.LoadingOverlay("show");
       $.ajax({
-        url: "http://localhost:5000/api/garansi/" + id,
+        url: API + "garansi/" + id,
         type: "delete",
         success: function (data) {
           load_data(1, 10);
@@ -379,7 +380,7 @@ $("#formTambah").on("submit", function (e) {
   const claimedLensa = garansi_lensa === "-" ? "0" : "1";
   const claimedFrame = garansi_frame === "-" ? "0" : "1";
   $.ajax({
-    url: "http://localhost:5000/api/garansi",
+    url: API + "garansi",
     type: "post",
     data: JSON.stringify({
       nama: nama,
@@ -400,8 +401,9 @@ $("#formTambah").on("submit", function (e) {
     contentType: "application/json",
     success: function (data) {
       $.LoadingOverlay("hide");
-      bsModalTambah.hide();
       $("#formTambah")[0].reset();
+      $("#tanggal").val(today);
+      bsModalTambah.hide();
 
       load_data(1, 10);
     },
@@ -419,7 +421,8 @@ $("#formTambah").on("submit", function (e) {
 function load_data(page, limit, search_query) {
   $.ajax({
     url:
-      "http://localhost:5000/api/garansipage?" +
+      API +
+      "garansipage?" +
       $.param({ page: page, limit: limit, search_query: search_query }),
     type: "get",
     data: JSON.stringify({ type: "fetch" }),
@@ -447,7 +450,7 @@ function load_data(page, limit, search_query) {
                     <td>` +
             data.data[count].frame.toUpperCase() +
             `</td>
-                    <td>` +
+                    <td style="max-width: 15ch;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">` +
             data.data[count].lensa.toUpperCase() +
             `</td>
                     <td>
