@@ -122,16 +122,17 @@
     <script src="../javascripts/JsBarcode.all.min.js"></script>
     <script>
       let code =
-        "<%- moment.tz(data.tanggal, 'Asia/Jakarta').format('MMDDYYhmmss') %>";
+        "<%- moment.tz(data.tanggal, 'Asia/Jakarta').format('MMDDYYhhmm') + data.optik_id %>";
       let id = "<%- data.id %>";
       JsBarcode("#barcode", code, {
         height: 40,
       });
-      document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(function() {
-                window.close();
-            }, 3000);
-        });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(function () {
+          window.close();
+        }, 3000);
+      });
     </script>
   </body>
 </html>
