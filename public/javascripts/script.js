@@ -1,5 +1,10 @@
 const API = config.URL_API;
-load_data(1, 10);
+const urlParams = new URLSearchParams(window.location.search);
+const querySearch = urlParams.get("search") || "";
+const opticId = urlParams.get("opticId") || "";
+load_data(1, 10, querySearch, opticId);
+$("#search_box").val(querySearch);
+$("#opticId").val(opticId);
 
 var today = new Date();
 var dd = String(today.getDate()).padStart(2, "0");
@@ -33,8 +38,18 @@ $("#tanggal").val(today);
 //   Load data Search
 $("#search_box").keyup(function () {
   var query = $("#search_box").val();
-  modifyUrl("search", "?search=" + query);
-  load_data(1, 10, query);
+  const urlParams = new URLSearchParams(window.location.search);
+  const opticId = urlParams.get("opticId") || "";
+  modifyUrl("search", `?search=${query}&opticId=${opticId}`);
+  load_data(1, 10, query, opticId);
+});
+
+$("#opticId").change(function () {
+  var opticId = $(this).val();
+  const urlParams = new URLSearchParams(window.location.search);
+  const myParam = urlParams.get("search") || "";
+  modifyUrl("search", `?search=${myParam}&opticId=${opticId}`);
+  load_data(1, 10, myParam, opticId);
 });
 
 function garansiStatus(isGaransi, garansiExpired, isClaimed) {
@@ -418,12 +433,12 @@ $("#formTambah").on("submit", function (e) {
 });
 
 // Load
-function load_data(page, limit, search_query) {
+function load_data(page, limit, name, opticId) {
   $.ajax({
     url:
       API +
-      "garansipage?" +
-      $.param({ page: page, limit: limit, search_query: search_query }),
+      "/warranty?" +
+      $.param({ page: page, limit: limit, name: name, opticId: opticId }),
     type: "get",
     data: JSON.stringify({ type: "fetch" }),
     dataType: "json",
@@ -437,21 +452,21 @@ function load_data(page, limit, search_query) {
             `
                 <tr>
                     <td>` +
-            moment(data.data[count].tanggal)
+            moment(data.data[count].createdAt)
               .tz("Asia/Jakarta")
               .format("DD/MM/YYYY") +
             `</td>
                     <td>` +
-            data.data[count].nama_optik +
+            data.data[count].optic.optic_name +
             `</td>
                     <td>` +
-            data.data[count].nama.toUpperCase() +
+            data.data[count].name.toUpperCase() +
             `</td>
                     <td>` +
             data.data[count].frame.toUpperCase() +
             `</td>
                     <td style="max-width: 15ch;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">` +
-            data.data[count].lensa.toUpperCase() +
+            data.data[count].lens.toUpperCase() +
             `</td>
                     <td>
                       <button id="` +
@@ -478,91 +493,30 @@ function load_data(page, limit, search_query) {
         }
       }
 
-      if (data.page > 0) {
+      if (data.totalPages > 0) {
         const urlParams = new URLSearchParams(window.location.search);
         const myParam = urlParams.get("search") || "";
-        var showingStart =
-          page == 1
-            ? "1"
-            : parseInt(parseInt(data.limit) * parseInt(page)) -
-              parseInt(data.limit) +
-              parseInt(1);
-        var showingTo =
-          parseInt(showingStart) + parseInt(data.data.length) - parseInt(1);
-        pagination +=
-          `<div>Showing ` +
-          showingStart +
-          ` to ` +
-          showingTo +
-          ` of ` +
-          data.totalRows +
-          ` entries </div>`;
-        let firstDisabled = page == 1 && "disabled";
-        pagination +=
-          `<nav aria-label="Page navigation example">
-            <ul class="pagination">
-              <li class="page-item ` +
-          firstDisabled +
-          `"><a class="page-link" onClick="load_data(1,10,'` +
-          myParam +
-          `')" href="javascript:void(0)">First</a></li>
-              <li class="page-item ` +
-          firstDisabled +
-          `">
-                <a class="page-link" onClick="load_data(` +
-          parseInt(parseInt(page) - 1) +
-          `,10,'` +
-          myParam +
-          `')" href="javascript:void(0)">
-                  <i class="fas fa-chevron-left"></i>
-                </a>
-              </li>`;
-        var i = Number(page) > 5 ? Number(page) - 2 : 1;
-        if (i !== 1) {
-          pagination += `<li class="page-item disabled"><a class="page-link">...</a></li>`;
-        }
-        for (; i <= Number(page) + 2 && i <= data.totalPage; i++) {
-          if (i == page) {
-            pagination +=
-              `<li class="page-item active"><a class="page-link">` +
-              i +
-              `</a></li>`;
-          } else {
-            pagination +=
-              `<li class="page-item"><a class="page-link" onClick="load_data(` +
-              i +
-              `,10,'` +
-              myParam +
-              `')" href="javascript:void(0)">` +
-              i +
-              `</a></li>`;
-          }
-          if (i == Number(page) + 2 && i < data.totalPage) {
-            pagination += `<li class="page-item disabled"><a class="page-link">...</a></li>`;
-          }
-        }
-        let lastDisabled = page == data.totalPage && "disabled";
-        pagination +=
-          `<li class="page-item ` +
-          lastDisabled +
-          `">
-                <a class="page-link" onClick="load_data(` +
-          parseInt(parseInt(page) + parseInt(1)) +
-          `, 10,'` +
-          myParam +
-          `')" href="javascript:void(0)">
-                  <i class="fas fa-chevron-right"></i>
-                </a>
-              </li>
-              <li class="page-item ` +
-          lastDisabled +
-          `"><a class="page-link" onClick="load_data(` +
-          data.totalPage +
-          `,10,'` +
-          myParam +
-          `')" href="javascript:void(0)">Last</a></li>
-            </ul>
-          </nav>`;
+        const opticId = urlParams.get("opticId") || "";
+        pagination += `
+        <nav aria-label="Page navigation example">
+          <ul class="pagination mb-1">
+            <li class="page-item ${
+              data.currentPage == 1 && "disabled"
+            }"><a class="page-link" href="javascript:void(0)" onClick="load_data(${
+          data.currentPage - 1
+        },10,'${myParam}',${opticId})">Previous</a></li>
+            <li class="page-item"><a class="page-link">${
+              data.currentPage
+            }</a></li>
+            <li class="page-item ${
+              data.currentPage == data.totalPages && "disabled"
+            }"><a class="page-link" href="javascript:void(0)" onClick="load_data(${
+          data.currentPage + 1
+        },10,'${myParam}',${opticId})">Next</a></li>
+          </ul>
+        </nav>
+        <div>Total Data : ${data.totalData}</div>
+        `;
       }
 
       $("#sample_data tbody").html(html);

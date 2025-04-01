@@ -13,17 +13,31 @@
     <%- include('theme-switch') %>
     <div class="container py-3">
       <%- include('header') %> <%- include('modal-edit') %>
-
-      <div class="form-group mb-2">
-        <input
-          type="text"
-          name="search_box"
-          id="search_box"
-          class="form-control"
-          placeholder="Type your search query here"
-          autofocus
-        />
+      <div class="row">
+        <div class="col-md-6 col-12">
+          <div class="form-group mb-2">
+            <input
+              type="text"
+              name="search_box"
+              id="search_box"
+              class="form-control"
+              placeholder="Type your search query here"
+              autofocus
+            />
+          </div>
+        </div>
+        <div class="col-md-6 col-12">
+          <div class="form-group mb-2">
+            <select name="" id="opticId" class="form-control">
+              <option value="" selected>-- Nama Optik --</option>
+              <% dataOptik.forEach(function(data) { %>
+              <option value="<%=data.id%>"><%=data.optic_name%></option>
+              <% }) %>
+            </select>
+          </div>
+        </div>
       </div>
+
       <div class="table-responsive">
         <table
           class="table table-striped table-hover table-sm"
@@ -41,7 +55,7 @@
           </thead>
           <tbody></tbody>
         </table>
-        <div class="d-flex justify-content-between" id="pagination"></div>
+        <div class="" id="pagination"></div>
       </div>
     </div>
     <%- include('modal-tambah') %> <%- include('modal-preview') %>

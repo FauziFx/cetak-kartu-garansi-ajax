@@ -6,8 +6,8 @@ const dotenv = require("dotenv");
 dotenv.config();
 /* GET home page. */
 router.get("/", async (req, res, next) => {
-  const responseOptik = await fetch(process.env.URL_API + "optik").then((res) =>
-    res.json()
+  const responseOptik = await fetch(process.env.URL_API + "/optic").then(
+    (res) => res.json()
   );
   res.render("index", {
     title: "Cetak Kartu Garansi",
