@@ -18,8 +18,10 @@ router.get("/", async (req, res, next) => {
 // Print Page
 router.get("/print/:id", async (req, res) => {
   const response = await fetch(
-    process.env.URL_API + "garansi/" + req.params.id
+    process.env.URL_API + "/warranty/" + req.params.id
   ).then((res) => res.json());
+
+  console.log(response.data);
 
   res.render("print", {
     data: response.data,

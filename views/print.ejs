@@ -49,11 +49,11 @@
         <table width="95%" id="table1">
           <tr>
             <th width="25%">Name</th>
-            <td>: <%=data.nama%></td>
+            <td>: <%=data.name%></td>
           </tr>
           <tr>
             <th width="25%">Type of Lens</th>
-            <td>: <%=data.lensa%></td>
+            <td>: <%=data.lens%></td>
           </tr>
           <tr>
             <th width="25%">Type of Frame</th>
@@ -70,7 +70,7 @@
             <td>Mpd</td>
             <td>Prism</td>
           </tr>
-          <% let r = data.r.split("/") %>
+          <% let r = data.od.split("/") %>
           <tr>
             <td>OD</td>
             <td><%= r[0] %></td>
@@ -80,7 +80,7 @@
             <td><%= r[4] %></td>
             <td><%= r[5] %></td>
           </tr>
-          <% let l = data.l.split("/") %>
+          <% let l = data.os.split("/") %>
           <tr>
             <td>OS</td>
             <td><%= l[0] %></td>
@@ -94,13 +94,13 @@
         <table width="95%" id="table3">
           <tr>
             <th width="30%">Date of Issue</th>
-            <td>: <%=moment.utc(data.tanggal).format('DD/MM/YYYY')%></td>
+            <td>: <%=moment.utc(data.createdAt).format('DD/MM/YYYY')%></td>
           </tr>
           <tr>
             <th width="30%">Frame</th>
             <td>
-              : <%=data.garansi_frame%> <%=data.garansi_frame === "6" ? " Bulan"
-              : data.garansi_frame === "-" ? "" : " Tahun"%>
+              : <%=data.warranty_frame%> <%= data.warranty_frame === "6" ?
+              "Bulan" : data.warranty_frame === "-" ? "" : " Tahun" %>
             </td>
             <td rowspan="2" width="40%"><svg id="barcode"></svg></td>
             <td></td>
@@ -108,8 +108,8 @@
           <tr>
             <th width="30%">Lensa</th>
             <td>
-              : <%=data.garansi_lensa%> <%=data.garansi_lensa === "6" ? " Bulan"
-              : data.garansi_lensa === "-" ? "" : " Tahun"%>
+              : <%=data.warranty_lens%> <%=data.warranty_lens === "6" ? " Bulan"
+              : data.warranty_lens === "-" ? "" : " Tahun"%>
             </td>
           </tr>
         </table>
@@ -122,7 +122,7 @@
     <script src="../javascripts/JsBarcode.all.min.js"></script>
     <script>
       let code =
-        "<%- moment.tz(data.tanggal, 'Asia/Jakarta').format('MMDDYYhhmm') + data.optik_id %>";
+        "<%- moment.tz(data.createdAt, 'Asia/Jakarta').format('MMDDYYhhmm') + data.opticId %>";
       let id = "<%- data.id %>";
       JsBarcode("#barcode", code, {
         height: 40,
