@@ -52,29 +52,9 @@ $("#opticId").change(function () {
   load_data(1, 10, myParam, opticId);
 });
 
-function garansiStatus(isGaransi, garansiExpired, isClaimed) {
-  let status;
-  if (!isGaransi) {
-    status = "Non-Garansi";
-  } else {
-    if (garansiExpired) {
-      status = "Expired";
-    } else {
-      if (isClaimed) {
-        status = "Claimed";
-      } else {
-        status = "Active";
-      }
-    }
-  }
-
-  return status;
-}
-
-function garansiIsExpired(expiredDate) {
-  let a = moment(expiredDate);
-  let b = moment().locale("ID");
-  return b.isAfter(a); // True = expired, False = Active
+function statusHandler(expireDate) {
+  const today = moment();
+  return today.isBefore(moment(expireDate)) ? "Active" : "Expired";
 }
 
 // btn Print
@@ -217,7 +197,7 @@ $(document).on("click", ".btn-preview", function () {
   $.LoadingOverlay("show");
 
   $.ajax({
-    url: API + "garansi/" + id,
+    url: API + "/warranty/" + id,
     type: "get",
     dataType: "json",
     contentType: "application/json",
@@ -228,54 +208,27 @@ $(document).on("click", ".btn-preview", function () {
         .format("DD-MMMM-YYYY");
 
       const garansi_lensa =
-        datas.garansi_lensa == "-"
+        datas.warranty_lens == "-"
           ? ""
-          : datas.garansi_lensa === "6"
-          ? datas.garansi_lensa + " Bulan "
-          : datas.garansi_lensa + " Tahun ";
+          : datas.warranty_lens === "6"
+          ? datas.warranty_lens + " Bulan "
+          : datas.warranty_lens + " Tahun ";
 
       const garansi_frame =
-        datas.garansi_frame == "-"
+        datas.warranty_frame == "-"
           ? ""
-          : datas.garansi_frame === "6"
-          ? datas.garansi_frame + " Bulan "
-          : datas.garansi_frame + " Tahun ";
-
-      let lensaIsGaransi = datas.garansi_lensa !== "-" ? true : false;
-      let frameIsGaransi = datas.garansi_frame !== "-" ? true : false;
-      let lensaIsExpired = garansiIsExpired(moment(datas.expired_lensa));
-      let frameIsExpired = garansiIsExpired(moment(datas.expired_frame));
-      let lensaIsClaimed = datas.claimed_lensa === "0" ? true : false;
-      let frameIsClaimed = datas.claimed_frame === "0" ? true : false;
-
-      const status_lensa = garansiStatus(
-        lensaIsGaransi,
-        lensaIsExpired,
-        lensaIsClaimed
-      );
-
-      const status_frame = garansiStatus(
-        frameIsGaransi,
-        frameIsExpired,
-        frameIsClaimed
-      );
+          : datas.warranty_frame === "6"
+          ? datas.warranty_frame + " Bulan "
+          : datas.warranty_frame + " Tahun ";
 
       const status_garansi_lensa =
-        status_lensa === "Non-Garansi"
-          ? `<span class="badge text-bg-secondary">Non-Garansi</span>`
-          : status_lensa === "Expired"
-          ? `<span class="badge text-bg-danger">Expired</span>`
-          : status_lensa === "Claimed"
-          ? `<span class="badge text-bg-primary">Claimed</span>`
-          : `<span class="badge text-bg-success">Active</span>`;
+        statusHandler(datas.expire_lens) == "Active"
+          ? `<span class="badge text-bg-success">Active</span>`
+          : `<span class="badge text-bg-danger">Expired</span>`;
       const status_garansi_frame =
-        status_frame === "Non-Garansi"
-          ? `<span class="badge text-bg-secondary">Non-Garansi</span>`
-          : status_frame === "Expired"
-          ? `<span class="badge text-bg-danger">Expired</span>`
-          : status_frame === "Claimed"
-          ? `<span class="badge text-bg-primary">Claimed</span>`
-          : `<span class="badge text-bg-success">Active</span>`;
+        statusHandler(datas.expire_frame) == "Active"
+          ? `<span class="badge text-bg-success">Active</span>`
+          : `<span class="badge text-bg-danger">Expired</span>`;
 
       const expired_lensa =
         datas.garansi_lensa == "-"
@@ -291,13 +244,13 @@ $(document).on("click", ".btn-preview", function () {
               .tz(datas.expired_frame, "Asia/Jakarta")
               .format("DD-MMMM-YYYY");
 
-      const od = datas.r.split("/");
-      const os = datas.l.split("/");
+      const od = datas.od.split("/");
+      const os = datas.os.split("/");
 
       $("#prev-tanggal").html(tanggal);
-      $("#prev-nama_optik").html(datas.nama_optik);
+      $("#prev-nama_optik").html(datas.optic.optic_name);
       $("#prev-nama").html(datas.nama);
-      $("#prev-lensa").html(datas.lensa);
+      $("#prev-lensa").html(datas.lens);
       $("#prev-frame").html(datas.frame);
       $("#prev-garansi_lensa").html(garansi_lensa + status_garansi_lensa);
       $("#prev-garansi_frame").html(garansi_frame + status_garansi_frame);
@@ -335,7 +288,7 @@ $(document).on("click", ".btn-hapus", function () {
     if (result.isConfirmed) {
       $.LoadingOverlay("show");
       $.ajax({
-        url: API + "garansi/" + id,
+        url: API + "/warranty/" + id,
         type: "delete",
         success: function (data) {
           load_data(1, 10);
