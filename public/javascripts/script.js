@@ -392,25 +392,21 @@ $("#formTambah").on("submit", function (e) {
       ? moment.utc(dateNow).add("6", "M").format("YYYY-MM-DD")
       : moment.utc(dateNow).add(garansi_frame, "y").format("YYYY-MM-DD");
 
-  const claimedLensa = garansi_lensa === "-" ? "0" : "1";
-  const claimedFrame = garansi_frame === "-" ? "0" : "1";
   $.ajax({
-    url: API + "garansi",
+    url: API + "/warranty",
     type: "post",
     data: JSON.stringify({
-      nama: nama,
+      name: nama,
       frame: frame,
-      lensa: lensa,
-      r: r,
-      l: l,
-      garansi_lensa: garansi_lensa,
-      garansi_frame: garansi_frame,
-      expired_lensa: expiredLensa + getCurrentTime(),
-      expired_frame: expiredFrame + getCurrentTime(),
-      claimed_lensa: claimedLensa,
-      claimed_frame: claimedFrame,
-      tanggal: dateNow + getCurrentTime(),
-      optik_id: optik_id,
+      lens: lensa,
+      od: r,
+      os: l,
+      warranty_lens: garansi_lensa,
+      warranty_frame: garansi_frame,
+      expire_lens: expiredLensa + getCurrentTime(),
+      expire_frame: expiredFrame + getCurrentTime(),
+      createdAt: dateNow + getCurrentTime(),
+      opticId: optik_id,
     }),
     dataType: "json",
     contentType: "application/json",
