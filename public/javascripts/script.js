@@ -107,31 +107,25 @@ $("#formEdit").on("submit", function (e) {
       ? moment.utc(dateNow).add("6", "M").format("YYYY-MM-DD")
       : moment.utc(dateNow).add(garansi_frame, "y").format("YYYY-MM-DD");
 
-  const claimedLensa = garansi_lensa === "-" ? "0" : "1";
-  const claimedFrame = garansi_frame === "-" ? "0" : "1";
-
   $.ajax({
-    url: API + "garansi/" + id,
-    type: "put",
+    url: API + "/warranty/" + id,
+    type: "patch",
     data: JSON.stringify({
-      nama: nama,
+      name: nama,
       frame: frame,
-      lensa: lensa,
-      r: r,
-      l: l,
-      garansi_lensa: garansi_lensa,
-      garansi_frame: garansi_frame,
-      expired_lensa: expiredLensa + getCurrentTime(),
-      expired_frame: expiredFrame + getCurrentTime(),
-      claimed_lensa: claimedLensa,
-      claimed_frame: claimedFrame,
-      optik_id: optik_id,
-      tanggal: tanggal + getCurrentTime(),
+      lens: lensa,
+      od: r,
+      os: l,
+      warranty_lens: garansi_lensa,
+      warranty_frame: garansi_frame,
+      expire_lens: new Date(expiredLensa),
+      expire_frame: new Date(expiredFrame),
+      opticId: optik_id,
+      createdAt: new Date(tanggal),
     }),
     dataType: "json",
     contentType: "application/json",
     success: function (data) {
-      console.log(data);
       $.LoadingOverlay("hide");
       bsModalEdit.hide();
       $("#formEdit")[0].reset();
@@ -154,25 +148,25 @@ $(document).on("click", ".btn-edit", function () {
   $.LoadingOverlay("show");
 
   $.ajax({
-    url: API + "garansi/" + id,
+    url: API + "/warranty/" + id,
     type: "get",
     dataType: "json",
     contentType: "application/json",
     success: function (data) {
       const datas = data.data;
       const tanggal = moment
-        .tz(datas.tanggal, "Asia/Jakarta")
+        .tz(datas.createdAt, "Asia/Jakarta")
         .format("YYYY-MM-DD");
       $("#edit-id").val(datas.id);
       $("#edit-tanggal").val(tanggal);
-      $("#edit-nama").val(datas.nama);
+      $("#edit-nama").val(datas.name);
       $("#edit-frame").val(datas.frame);
-      $("#edit-lensa").val(datas.lensa);
-      $("#edit-optik_id").val(datas.optik_id).change();
-      $("#edit-garansi_lensa").val(datas.garansi_lensa).change();
-      $("#edit-garansi_frame").val(datas.garansi_frame).change();
-      const od = datas.r.split("/");
-      const os = datas.l.split("/");
+      $("#edit-lensa").val(datas.lens);
+      $("#edit-optik_id").val(datas.opticId).change();
+      $("#edit-garansi_lensa").val(datas.warranty_lens).change();
+      $("#edit-garansi_frame").val(datas.warranty_frame).change();
+      const od = datas.od.split("/");
+      const os = datas.os.split("/");
       $("#edit-rsph").val(od[0]);
       $("#edit-rcyl").val(od[1]);
       $("#edit-raxis").val(od[2]);
@@ -231,25 +225,21 @@ $(document).on("click", ".btn-preview", function () {
           : `<span class="badge text-bg-danger">Expired</span>`;
 
       const expired_lensa =
-        datas.garansi_lensa == "-"
-          ? ""
-          : moment
-              .tz(datas.expired_lensa, "Asia/Jakarta")
-              .format("DD-MMMM-YYYY");
+        datas.warranty_lens != "-"
+          ? moment.tz(datas.expire_lens, "Asia/Jakarta").format("DD-MMMM-YYYY")
+          : "";
 
       const expired_frame =
-        datas.garansi_frame == "-"
-          ? ""
-          : moment
-              .tz(datas.expired_frame, "Asia/Jakarta")
-              .format("DD-MMMM-YYYY");
+        datas.warranty_frame != "-"
+          ? moment.tz(datas.expire_frame, "Asia/Jakarta").format("DD-MMMM-YYYY")
+          : "";
 
       const od = datas.od.split("/");
       const os = datas.os.split("/");
 
       $("#prev-tanggal").html(tanggal);
       $("#prev-nama_optik").html(datas.optic.optic_name);
-      $("#prev-nama").html(datas.nama);
+      $("#prev-nama").html(datas.name);
       $("#prev-lensa").html(datas.lens);
       $("#prev-frame").html(datas.frame);
       $("#prev-garansi_lensa").html(garansi_lensa + status_garansi_lensa);
