@@ -2,9 +2,11 @@ const API = config.URL_API;
 const urlParams = new URLSearchParams(window.location.search);
 const querySearch = urlParams.get("search") || "";
 const opticId = urlParams.get("opticId") || "";
-load_data(1, 10, querySearch, opticId);
+load_data(1, 15, querySearch, opticId);
 $("#search_box").val(querySearch);
 $("#opticId").val(opticId);
+const POLL_INTERVAL = 60000;
+let pollingId = null;
 
 var today = new Date();
 var dd = String(today.getDate()).padStart(2, "0");
@@ -41,7 +43,7 @@ $("#search_box").keyup(function () {
   const urlParams = new URLSearchParams(window.location.search);
   const opticId = urlParams.get("opticId") || "";
   modifyUrl("search", `?search=${query}&opticId=${opticId}`);
-  load_data(1, 10, query, opticId);
+  load_data(1, 15, query, opticId);
 });
 
 $("#opticId").change(function () {
@@ -49,7 +51,7 @@ $("#opticId").change(function () {
   const urlParams = new URLSearchParams(window.location.search);
   const myParam = urlParams.get("search") || "";
   modifyUrl("search", `?search=${myParam}&opticId=${opticId}`);
-  load_data(1, 10, myParam, opticId);
+  load_data(1, 15, myParam, opticId);
 });
 
 function statusHandler(expireDate) {
@@ -97,15 +99,15 @@ $("#formEdit").on("submit", function (e) {
     garansi_lensa === "-"
       ? dateNow
       : garansi_lensa === "6"
-      ? moment.utc(dateNow).add("6", "M").format("YYYY-MM-DD")
-      : moment.utc(dateNow).add(garansi_lensa, "y").format("YYYY-MM-DD");
+        ? moment.utc(dateNow).add("6", "M").format("YYYY-MM-DD")
+        : moment.utc(dateNow).add(garansi_lensa, "y").format("YYYY-MM-DD");
 
   const expiredFrame =
     garansi_frame === "-"
       ? dateNow
       : garansi_frame === "6"
-      ? moment.utc(dateNow).add("6", "M").format("YYYY-MM-DD")
-      : moment.utc(dateNow).add(garansi_frame, "y").format("YYYY-MM-DD");
+        ? moment.utc(dateNow).add("6", "M").format("YYYY-MM-DD")
+        : moment.utc(dateNow).add(garansi_frame, "y").format("YYYY-MM-DD");
 
   $.ajax({
     url: API + "/warranty/" + id,
@@ -129,7 +131,7 @@ $("#formEdit").on("submit", function (e) {
       $.LoadingOverlay("hide");
       bsModalEdit.hide();
       $("#formEdit")[0].reset();
-      load_data(1, 10);
+      load_data(1, 15);
     },
     complete: function () {
       $.LoadingOverlay("hide");
@@ -205,15 +207,15 @@ $(document).on("click", ".btn-preview", function () {
         datas.warranty_lens == "-"
           ? ""
           : datas.warranty_lens === "6"
-          ? datas.warranty_lens + " Bulan "
-          : datas.warranty_lens + " Tahun ";
+            ? datas.warranty_lens + " Bulan "
+            : datas.warranty_lens + " Tahun ";
 
       const garansi_frame =
         datas.warranty_frame == "-"
           ? ""
           : datas.warranty_frame === "6"
-          ? datas.warranty_frame + " Bulan "
-          : datas.warranty_frame + " Tahun ";
+            ? datas.warranty_frame + " Bulan "
+            : datas.warranty_frame + " Tahun ";
 
       const status_garansi_lensa =
         statusHandler(datas.expire_lens) == "Active"
@@ -281,7 +283,7 @@ $(document).on("click", ".btn-hapus", function () {
         url: API + "/warranty/" + id,
         type: "delete",
         success: function (data) {
-          load_data(1, 10);
+          load_data(1, 15);
         },
         complete: function () {
           $.LoadingOverlay("hide");
@@ -325,15 +327,15 @@ $("#formTambah").on("submit", function (e) {
     garansi_lensa === "-"
       ? dateNow
       : garansi_lensa === "6"
-      ? moment.utc(dateNow).add("6", "M").format("YYYY-MM-DD")
-      : moment.utc(dateNow).add(garansi_lensa, "y").format("YYYY-MM-DD");
+        ? moment.utc(dateNow).add("6", "M").format("YYYY-MM-DD")
+        : moment.utc(dateNow).add(garansi_lensa, "y").format("YYYY-MM-DD");
 
   const expiredFrame =
     garansi_frame === "-"
       ? dateNow
       : garansi_frame === "6"
-      ? moment.utc(dateNow).add("6", "M").format("YYYY-MM-DD")
-      : moment.utc(dateNow).add(garansi_frame, "y").format("YYYY-MM-DD");
+        ? moment.utc(dateNow).add("6", "M").format("YYYY-MM-DD")
+        : moment.utc(dateNow).add(garansi_frame, "y").format("YYYY-MM-DD");
 
   $.ajax({
     url: API + "/warranty",
@@ -359,7 +361,7 @@ $("#formTambah").on("submit", function (e) {
       $("#tanggal").val(today);
       bsModalTambah.hide();
 
-      load_data(1, 10);
+      load_data(1, 15);
     },
     complete: function () {
       $.LoadingOverlay("hide");
@@ -377,12 +379,16 @@ function load_data(page, limit, name, opticId) {
     url:
       API +
       "/warranty?" +
-      $.param({ page: page, limit: limit, name: name, opticId: opticId }),
+      $.param({ page: page, limit: limit, name: name, opticId: opticId }) +
+      "&timestamp=" +
+      new Date().getTime(),
     type: "get",
     data: JSON.stringify({ type: "fetch" }),
     dataType: "json",
     contentType: "application/json",
     success: function (data) {
+      console.log("Connected");
+
       var html = "";
       var pagination = "";
       if (data.data.length > 0) {
@@ -439,19 +445,14 @@ function load_data(page, limit, name, opticId) {
         pagination += `
         <nav aria-label="Page navigation example">
           <ul class="pagination mb-1">
-            <li class="page-item ${
-              data.currentPage == 1 && "disabled"
-            }"><a class="page-link" href="javascript:void(0)" onClick="load_data(${
-          data.currentPage - 1
-        },10,'${myParam}',${opticId})">Previous</a></li>
-            <li class="page-item"><a class="page-link">${
-              data.currentPage
-            }</a></li>
-            <li class="page-item ${
-              data.currentPage == data.totalPages && "disabled"
-            }"><a class="page-link" href="javascript:void(0)" onClick="load_data(${
-          data.currentPage + 1
-        },10,'${myParam}',${opticId})">Next</a></li>
+            <li class="page-item ${data.currentPage == 1 && "disabled"
+          }"><a class="page-link" href="javascript:void(0)" onClick="load_data(${data.currentPage - 1
+          },10,'${myParam}',${opticId})">Previous</a></li>
+            <li class="page-item"><a class="page-link">${data.currentPage
+          }</a></li>
+            <li class="page-item ${data.currentPage == data.totalPages && "disabled"
+          }"><a class="page-link" href="javascript:void(0)" onClick="load_data(${data.currentPage + 1
+          },10,'${myParam}',${opticId})">Next</a></li>
           </ul>
         </nav>
         <div>Total Data : ${data.totalData}</div>
@@ -490,4 +491,18 @@ function getCurrentTime() {
 
   const time = ` ${hour}:${minute}:${second}`;
   return time;
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    load_data();
+    pollingId = setInterval(load_data, POLL_INTERVAL);
+  } else {
+    clearInterval(pollingId);
+  }
+});
+
+if (document.visibilityState === "visible") {
+  load_data(1, 15);
+  pollingId = setInterval(load_data, POLL_INTERVAL);
 }
