@@ -65,7 +65,7 @@ $(document).on("click", ".btn-print", function () {
   window.open(
     "print/" + id,
     "",
-    "postwindow directories=0,titlebar=0,toolbar=0,location=0,status=0,menubar=0,scrollbars=no,resizable=no, width=960,height=480"
+    "postwindow directories=0,titlebar=0,toolbar=0,location=0,status=0,menubar=0,scrollbars=no,resizable=no, width=960,height=480",
   );
 });
 
@@ -445,14 +445,19 @@ function load_data(page, limit, name, opticId) {
         pagination += `
         <nav aria-label="Page navigation example">
           <ul class="pagination mb-1">
-            <li class="page-item ${data.currentPage == 1 && "disabled"
-          }"><a class="page-link" href="javascript:void(0)" onClick="load_data(${data.currentPage - 1
-          },10,'${myParam}',${opticId})">Previous</a></li>
-            <li class="page-item"><a class="page-link">${data.currentPage
-          }</a></li>
-            <li class="page-item ${data.currentPage == data.totalPages && "disabled"
-          }"><a class="page-link" href="javascript:void(0)" onClick="load_data(${data.currentPage + 1
-          },10,'${myParam}',${opticId})">Next</a></li>
+            <li class="page-item ${
+              data.currentPage == 1 && "disabled"
+            }"><a class="page-link" href="javascript:void(0)" onClick="load_data(${
+              data.currentPage - 1
+            },15,'${myParam}',${opticId})">Previous</a></li>
+            <li class="page-item"><a class="page-link">${
+              data.currentPage
+            }</a></li>
+            <li class="page-item ${
+              data.currentPage == data.totalPages && "disabled"
+            }"><a class="page-link" href="javascript:void(0)" onClick="load_data(${
+              data.currentPage + 1
+            },15,'${myParam}',${opticId})">Next</a></li>
           </ul>
         </nav>
         <div>Total Data : ${data.totalData}</div>
